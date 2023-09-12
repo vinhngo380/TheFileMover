@@ -7,72 +7,64 @@ import os, time, shutil, re
 global DEBUG
 DEBUG = False
 
-def image_filter(file):
-    image_filetypes = ['.jpg', '.png']
-    for file_type in image_filetypes:
-        if file_type in file:
-            return True
-    return False
 
-
-def document_filter(file):
-    document_filetypes = ['.docx', '.pdf', '.doc']
-    for file_type in document_filetypes:
-        if file_type in file:
-            return True
-    return False
-
-
-class fileType:
-    def __init__(self, extensions, name, parentDirectory, downloadDirectory):
-        self.extensions = extensions
+class FileTypeMove:
+    def __init__(self, conditions, name, parent_directory, download_directory):
+        self.conditions = conditions
         self.name = name
-        self.filesList = []
-        self.parentDirectory = parentDirectory
-        self.downloadDirectory = downloadDirectory
-        self.targetDirectory = self.parentDirectory + 'downloaded_' + self.name
+        self.files_list = []
+        self.parent_directory = parent_directory
+        self.download_directory = download_directory
+        self.target_directory = self.parent_directory + 'downloaded_' + self.name
 
-    def baseFilter(self, file):
-        for type in self.extensions:
+    def base_filter(self, file):
+        for type in self.conditions:
             if type in file:
                 return True
         return False
 
-    def createFileList(self, files):
-        self.filesList = list(filter(self.baseFilter, files))
-        if DEBUG: print(self.filesList)
+    def create_file_list(self, files):
+        self.files_list = list(filter(self.base_filter, files))
+        if DEBUG: print(self.files_list)
 
-    def createNewDirectory(self):
-        if not os.path.isdir(self.targetDirectory + '/'):
-            os.mkdir(self.targetDirectory)
+    def create_new_directory(self):
+        if not os.path.isdir(self.target_directory + '/'):
+            os.mkdir(self.target_directory)
             if DEBUG: print("downloaded", self.name, "made")
 
-    def moveFiles(self, files):
-        self.createFileList(files)
-        self.createNewDirectory()
-        if self.filesList:
-            for file in self.filesList:
-                new_path = self.targetDirectory + '/' + file
-                shutil.move(self.downloadDirectory + '/' + file, new_path)
-                if DEBUG: print("moved", file, "from", self.downloadDirectory, "to", new_path)
+    def move_files(self, files):
+        self.create_file_list(files)
+        self.create_new_directory()
+        if self.files_list:
+            for file in self.files_list:
+                new_path = self.target_directory + '/' + file
+                shutil.move(self.download_directory + '/' + file, new_path)
+                if DEBUG: print("moved", file, "from", self.download_directory, "to", new_path)
 
-    def getList(self):
-        return self.filesList
+    def get_list(self):
+        return self.files_list
+
+
+
+
+
 
 
 def moooove():
     if DEBUG: print(os.listdir())
     files = [file for file in os.listdir(downloadDirectory)]
 
-    images = fileType(['.png', '.jpg'], 'images', '', downloadDirectory)
-    if DEBUG: print(images.getList())
-    images.moveFiles()
+    images = FileTypeMove(['.png', '.jpg', 'jpeg', 'webp'], 'images', '', downloadDirectory)
+    if DEBUG: print(images.get_list())
+    images.move_files(files)
 
-    documents = fileType(['.docx', '.pdf', '.xls'], 'documents', '', downloadDirectory)
-    if DEBUG: print(documents.getList())
-    documents.moveFiles()
+    documents = FileTypeMove(['.docx', '.pdf', '.xls'], 'documents', '', downloadDirectory)
+    if DEBUG: print(documents.get_list())
+    documents.move_files(files)
 
-
+    classwork = FileTypeMove(['__classwork__'], 'classwork', downloadDirectory)
+    if DEBUG: print(classwork)
+    classwork.move_files(files)
 
 
 # Press the green button in the gutter to run the script.
@@ -82,7 +74,7 @@ if __name__ == '__main__':
     downloadDirectory = '/Users/vinhngo/Downloads'
     while(True):
         moooove()
-        print("mooove")
+        if DEBUG: print("mooove")
         time.sleep(5)
 
 
