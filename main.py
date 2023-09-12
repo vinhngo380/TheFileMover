@@ -3,7 +3,9 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-import os, time, shutil, re
+import os, time, shutil, re, platform
+from pathlib import Path
+
 global DEBUG
 DEBUG = True
 
@@ -78,7 +80,11 @@ if __name__ == '__main__':
     #mac downloadDirectory = '/Users/vinhngo/Downloads'
     #windows downloadDirectory = 'C:/Users/vinh-school/Downloads'
     downloadDirectory = 'C:/Users/vinh-school/Downloads'
+
+    print("download folder", str(Path.home() / "Downloads"))
     moooove()
+
+    print(platform.system())
 
     """
     while(True):
