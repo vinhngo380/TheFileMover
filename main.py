@@ -6,39 +6,58 @@
 import os, time, shutil, re
 
 
+def image_filter(file):
+    image_filetypes = ['.jpg', '.png']
+    for file_type in image_filetypes:
+        if file_type in file:
+            return True
+    return False
+
+
+def document_filter(file):
+    document_filetypes = ['.docx', '.pdf', '.doc']
+    for file_type in document_filetypes:
+        if file_type in file:
+            return True
+    return False
+
+
 def moooove():
-    files = [f for f in os.listdir(downloadDirectory) if valid_filetypes in f.lower(f.split('\.'))]
-    images = [f for f in files if image_filetypes in f.lower()]
-    documents = [f for f in files if document_filetypes in f.lower()]
+    files = [file for file in os.listdir(downloadDirectory)]
 
+    images = list(filter(image_filter, files))
+    documents = list(filter(document_filter, files))
+    print("images", images)
+    print("doucments", documents)
 
-    for image in images:
-        print(re.split('; |, |\*|\n|\.|\s|', image))
-        new_path =  'downloaded_images/' + image
-        shutil.move(downloadDirectory + '/' + image, new_path)
-        print("moved", image, "to", new_path)
+    print(os.listdir())
+    parent_directory = 'C:/Users/vinh-school/PycharmProjects/TheFileMover/'
+    if images:
+        if not os.path.isdir(parent_directory + 'downloaded_images/'):
+            os.mkdir(parent_directory + 'downloaded_images')
+            print("downloaded_images made")
+        for image in images:
+            new_path = parent_directory + 'downloaded_images/' + image
+            shutil.move(downloadDirectory + '/' + image, new_path)
+            print("moved", image, "to", new_path)
 
-
+    if documents:
+        if not os.path.isdir(parent_directory + 'downloaded_documents/'):
+            os.mkdir(parent_directory + 'downloaded_documents')
+            print("downloaded_documents made")
+        for document in documents:
+            new_path = parent_directory + 'downloaded_documents/' + document
+            shutil.move(downloadDirectory + '/' + document, new_path)
+            print("moved", document, "to", new_path)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-
-    string = "hi      everyone my name is markplier"
-    words = ['blahblahblah', 'is', 'uhhh']
-    list_of_string = string.split()
-    print(word for word in list_of_string if word in words) #[i for i in L1 if i in L2]
-    """
-    downloadDirectory = '/Users/vinhngo/Downloads'
-    image_filetypes = ['.jpg', '.png']
-    document_filetypes = ['.docx', '.pdf']
-    valid_filetypes = image_filetypes + document_filetypes
-
+    downloadDirectory = 'C:/Users/vinh-school/Downloads'
     while(True):
         moooove()
         print("mooove")
         time.sleep(5)
-    """
 
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/
