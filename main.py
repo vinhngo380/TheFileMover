@@ -4,63 +4,74 @@
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 import os, time, shutil, re
-
-DEBUG = True
-"""
-methods to be used with the built in filter() function to filter out the filetypes from the download folder
->>>list(filter(filter_method, files_from_somewhere)) --> give the files with specified extension
-"""
-def image_filter(file):
-    image_filetypes = ['.jpg', '.png']
-    for file_type in image_filetypes:
-        if file_type in file:
-            return True
-    return False
+global DEBUG
+DEBUG = False
 
 
-def document_filter(file):
-    document_filetypes = ['.docx', '.pdf', '.doc']
-    for file_type in document_filetypes:
-        if file_type in file:
-            return True
-    return False
+class FileTypeMove:
+    def __init__(self, conditions, name, parent_directory, download_directory):
+        self.conditions = conditions
+        self.name = name
+        self.files_list = []
+        self.parent_directory = parent_directory
+        self.download_directory = download_directory
+        self.target_directory = self.parent_directory + 'downloaded_' + self.name
+
+    def base_filter(self, file):
+        for type in self.conditions:
+            if type in file:
+                return True
+        return False
+
+    def create_file_list(self, files):
+        self.files_list = list(filter(self.base_filter, files))
+        if DEBUG: print(self.files_list)
+
+    def create_new_directory(self):
+        if not os.path.isdir(self.target_directory + '/'):
+            os.mkdir(self.target_directory)
+            if DEBUG: print("downloaded", self.name, "made")
+
+    def move_files(self, files):
+        self.create_file_list(files)
+        self.create_new_directory()
+        if self.files_list:
+            for file in self.files_list:
+                new_path = self.target_directory + '/' + file
+                shutil.move(self.download_directory + '/' + file, new_path)
+                if DEBUG: print("moved", file, "from", self.download_directory, "to", new_path)
+
+    def get_list(self):
+        return self.files_list
 
 
-"""
-"main" method to identify and move files around
-"""
+
+
+
+
+
 def moooove():
+    if DEBUG: print(os.listdir())
     files = [file for file in os.listdir(downloadDirectory)]
 
-    images = list(filter(image_filter, files))
-    documents = list(filter(document_filter, files))
-    if DEBUG: print("images", images)
-    if DEBUG: print("doucments", documents)
+    images = FileTypeMove(['.png', '.jpg', 'jpeg', 'webp'], 'images', '', downloadDirectory)
+    if DEBUG: print(images.get_list())
+    images.move_files(files)
 
-    if DEBUG: print(os.listdir())
-    parent_directory = 'C:/Users/vinh-school/PycharmProjects/TheFileMover/'
-    if images:
-        if not os.path.isdir(parent_directory + 'downloaded_images/'):
-            os.mkdir(parent_directory + 'downloaded_images')
-            if DEBUG: print("downloaded_images made")
-        for image in images:
-            new_path = parent_directory + 'downloaded_images/' + image
-            shutil.move(downloadDirectory + '/' + image, new_path)
-            if DEBUG: print("moved", image, "to", new_path)
+    documents = FileTypeMove(['.docx', '.pdf', '.xls'], 'documents', '', downloadDirectory)
+    if DEBUG: print(documents.get_list())
+    documents.move_files(files)
 
-    if documents:
-        if not os.path.isdir(parent_directory + 'downloaded_documents/'):
-            os.mkdir(parent_directory + 'downloaded_documents')
-            if DEBUG: print("downloaded_documents made")
-        for document in documents:
-            new_path = parent_directory + 'downloaded_documents/' + document
-            shutil.move(downloadDirectory + '/' + document, new_path)
-            if DEBUG: print("moved", document, "to", new_path)
+    classwork = FileTypeMove(['__classwork__'], 'classwork', downloadDirectory)
+    if DEBUG: print(classwork)
+    classwork.move_files(files)
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    downloadDirectory = 'C:/Users/vinh-school/Downloads'
+    #mac downloadDirectory = '/Users/vinhngo/Downloads'
+    #windows downloadDirectory = 'C:/Users/vinh-school/Downloads'
+    downloadDirectory = '/Users/vinhngo/Downloads'
     while(True):
         moooove()
         if DEBUG: print("mooove")
