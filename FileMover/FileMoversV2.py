@@ -17,14 +17,14 @@ class FileTypeMove:
                  target_dir: str,
                  file_types: List[List[str]],
                  file_name: str,
-                 formatter: str,
+                 formatter ='_',
                  sub_dir=[]
                  ):
         self.folder_name = folder_name
         self.source_dir = source_dir
         self.target_dir = target_dir
         self.files_list = []
-        self.file_types = type
+        self.file_types = file_types
         self.formatter = formatter
         self.sub_dir = sub_dir
         self.file_name = file_name
@@ -38,9 +38,9 @@ class FileTypeMove:
             result += f"/{directory}"
         return result
     
-    def create_new_directories(self, directory: List[str]) -> None:
-        list_dir = self.directory_to_list(dir)
-        if DEBUG: print(f"list of dir{directory}")
+    def create_new_directories(self, directory: str) -> None:
+        list_dir = self.directory_to_list(directory)
+        if DEBUG: print(f"list of dir{list_dir}")
         for index, directory in enumerate(directory):
             dir = self.directory_to_string(directory[:index + 1])
             if DEBUG: print(f"dir = {dir}, index = {index}")
@@ -48,24 +48,21 @@ class FileTypeMove:
                 os.mkdir(dir)
                 if DEBUG: print(f"created directory {dir}")
 
-    def filter_by_name(self, files) -> List[str]:
-        for file in files:
-            file_name_list = file.split(self.formatter)
-            if file_name_list[0].equals(self.file_name):
-                return True
+    def filter_by_name(self, file: str) -> List[str]:
+        file_name_list = file.split(self.formatter)
+        if file_name_list[0] == self.file_name:
+            return True
         return False
     
-    def filter_by_type(self, files, file_type) -> List[str]:
-        for file in files:
-            file_name_list = file.split('.')
-            if file_name_list[-1] in file_type:
-                return True
+    def filter_by_type(self, file: str, file_type: List[str]) -> List[str]:
+        file_name_list = file.split('.')
+        if file_name_list[-1] in file_type:
+            return True
         return False
     
     def filter_all(self, files) -> None:
         self.files_list = list(filter(self.filter_by_name, files))
-        
-    
+
     def dir_from_file(self, file) -> str:
         return file.split(self.formatter)[1:]
     
