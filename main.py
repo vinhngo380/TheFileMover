@@ -3,13 +3,16 @@
 # Press ⌃R to execute it or replace it with your code.
 # Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
-import time
-from FileMovers import *
+import time, os
+from FileMover.FileMovers import FileTypeMove, FileNameMove
+from FileMover.FileMoversV2 import FileTypeMove as FileTypeMoveV2, IMAGES
+from pathlib import Path
+
 
 global DEBUG
 DEBUG = True
 
-
+"""
 def mooove(dled_files):
     compeng270.move_files(dled_files)
     compeng270.rename()
@@ -31,10 +34,10 @@ def mooove(dled_files):
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    """
+
     taken from https://stackoverflow.com/questions/35851281/python-finding-the-users-downloads-folder
     not the best solution --> it will not work for people who do not use english and move their downloads folder around, but its not really a big concern unless i let other people use this
-    """
+
     dl_dir = str(Path.home() / "Downloads")
 
     sdocs_target_dir = str(Path.home() / "Documents") + '/Schoolwork/Semester 3'
@@ -49,16 +52,20 @@ if __name__ == '__main__':
 
     compeng270 = FileNameMove('_ce270_', 'Comp Eng 270', ['_ce270_'], dl_dir, sdocs_target_dir)
     physics212 = FileNameMove('_p212_', 'Physics 212', ['_p212_'], dl_dir, sdocs_target_dir)
-    math220 = FileNameMove('_m220_', 'Math 220', ['_m220_'], dl_dir,
-                           sdocs_target_dir)
+    math220 = FileNameMove('_m220_', 'Math 220', ['_m220_'], dl_dir, sdocs_target_dir)
 
     mooove(files)
 
-    """
+
+
     while(True):
         mooove()
         if DEBUG: print("mooove")
         time.sleep(60)
     """
+if __name__ == '__main__':
+    test = FileTypeMoveV2('test_folder', '', '/Users/vinhngo/Documents/Test 1/Test2/ He He He Ha',  'tester', IMAGES)
+    test.create_new_directory()
+
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

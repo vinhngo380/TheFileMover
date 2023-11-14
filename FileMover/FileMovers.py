@@ -1,15 +1,17 @@
 import os, shutil
-from pathlib import Path
+
 #import re
 
 global DEBUG
 DEBUG = True
 
 
+
+
 class FileTypeMove:
     def __init__(self, folder_name, conditions, download_directory, target_directory):
-        self.conditions = conditions
         self.folder_name = folder_name
+        self.conditions = conditions
         self.files_list = []
         self.download_directory = download_directory + '/'
         self.target_directory = target_directory + '/' + self.folder_name + '/'
@@ -38,7 +40,16 @@ class FileTypeMove:
                 shutil.move(self.download_directory + file, new_path)
                 if DEBUG: print(self.folder_name, "moved", file, "from", self.download_directory, "to", new_path)
 
-    def get_list(self):
+    def get_folder_name(self):
+        return self.folder_name
+    
+    def get_dl_directory(self):
+        return self.download_directory
+    
+    def get_target_directory(self):
+        return self.target_directory
+
+    def get_files_list(self):
         return self.files_list
 
 
