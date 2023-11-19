@@ -1,7 +1,3 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
 
 import time, os
 from FileMover.FileMovers import FileTypeMove, FileNameMove
@@ -38,9 +34,9 @@ if __name__ == '__main__':
     taken from https://stackoverflow.com/questions/35851281/python-finding-the-users-downloads-folder
     not the best solution --> it will not work for people who do not use english and move their downloads folder around, but its not really a big concern unless i let other people use this
 
-    dl_dir = str(Path.home() / "Downloads")
+    download_directory = str(Path.home() / "Downloads")
 
-    sdocs_target_dir = str(Path.home() / "Documents") + '/Schoolwork/Semester 3'
+    schooldocs_target_dir = str(Path.home() / "Documents") + '/Schoolwork/Semester 3'
 
     if DEBUG: print(os.listdir())
     files = [file for file in os.listdir(dl_dir)]
@@ -64,8 +60,7 @@ if __name__ == '__main__':
         time.sleep(60)
     """
 if __name__ == '__main__':
-    test = FileTypeMoveV2('test_folder', '', '/Users/vinhngo/Documents/Test 1/Test2/ He He He Ha',  'tester', IMAGES)
-    test.create_new_directory()
+    print('lol')
+    # test = FileTypeMoveV2('test_folder', '', '/Users/vinhngo/Documents/Test 1/Test2/ He He He Ha',  'tester', IMAGES)
+    # test.create_new_directory()
 
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
