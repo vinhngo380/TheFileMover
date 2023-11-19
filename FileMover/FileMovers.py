@@ -1,76 +1,110 @@
 import os, shutil
+from typing import List, Tuple
+from pathlib import PurePath
 
-#import re
 
 global DEBUG
 DEBUG = True
 
+IMAGES = ['png', 'jpeg', 'jpg', 'webp', 'svg']
+DOCUMENTS = ['docx']
+EXECS = ['msi', 'exe', 'dmg']
 
-
-
-class FileTypeMove:
-    def __init__(self, folder_name, conditions, download_directory, target_directory):
+class FileMover:
+    #'.' is not a valid format as of right now because of filter_by_type
+    def __init__(self, 
+                 folder_name: str, 
+                 source_directory: PurePath,
+                 target_directory: PurePath,
+                 file_types: List[List[str]],
+                 valid_file_name: List[str],
+                 formatter ='_', 
+                 sub_dir=[]
+                 ):
         self.folder_name = folder_name
-        self.conditions = conditions
+        self.source_directory = source_directory
+        self.target_directory = PurePath(os.path.normpath(os.path.join(target_directory, folder_name)))
         self.files_list = []
-        self.download_directory = download_directory + '/'
-        self.target_directory = target_directory + '/' + self.folder_name + '/'
+        self.file_types = file_types
+        self.formatter = formatter
+        self.sub_dir = sub_dir
+        self.valid_file_name = valid_file_name
 
-    def type_filter(self, file):
-        for file_type in self.conditions:
-            if file_type in file:
-                return True
-        return False
-
-    def create_file_list(self, files):
-        self.files_list = list(filter(self.type_filter, files))
-        if DEBUG: print(self.folder_name, "file list", self.files_list)
-
-    def create_new_directory(self):
-        if not os.path.isdir(self.target_directory):
-            os.mkdir(self.target_directory)
-            if DEBUG: print(self.folder_name, "directory made")
-
-    def move_files(self, files):
-        self.create_file_list(files)
-        self.create_new_directory()
-        if self.files_list:
-            for file in self.files_list:
-                new_path = self.target_directory + file
-                shutil.move(self.download_directory + file, new_path)
-                if DEBUG: print(self.folder_name, "moved", file, "from", self.download_directory, "to", new_path)
-
-    def get_folder_name(self):
-        return self.folder_name
+    def string_to_tuple(self, dir: str) -> Tuple[str]:
+        if DEBUG: print(f"directory_to_list: {os.path.normpath(dir)}")
+        path_object_dir = PurePath(os.path.normpath(dir))
+        return path_object_dir.parts[1::]
     
-    def get_dl_directory(self):
-        return self.download_directory
+    def tuple_to_string(self, dir: Tuple[str]) -> str:
+        path_object_dir = os.path.normpath(os.path.join(*dir))
+        return path_object_dir
     
-    def get_target_directory(self):
-        return self.target_directory
+    def create_new_directories(self, directory: PurePath) -> None:
+        print(f"create_new_directories: {directory}")
+        path_list = directory.parents
+        for i in range(len(path_list) - 2, -1, -1): #make this more dynamic
+            current_path = PurePath(path_list[i])
+            print(str(current_path))
+            if not os.path.isdir(current_path):
+                os.mkdir(current_path)
+        if not os.path.isdir(directory):
+            os.mkdir(directory)
 
-    def get_files_list(self):
-        return self.files_list
+    def filter_by_name(self, files: List[str]) -> List[str]:
+        files_filtered = []
+        for file in files:
+            file_name_list = file.split(self.formatter)[0]
+            if DEBUG: print(f"file = {file_name_list} file_name = {self.valid_file_name}")
+            if file_name_list in self.valid_file_name:
+                files_filtered.append(file)
+        return files_filtered
+    
+    def filter_by_type(self, files: List[str]) -> List[str]:
+        flattened_valid_file_types = [] 
+        for sub_valid_type in self.file_types:
+            for valid_file_type in sub_valid_type:
+                flattened_valid_file_types.append(valid_file_type)
+        if DEBUG: print(f"valid_file_types = {flattened_valid_file_types}")
 
+        files_filtered = []
+        for file in files:
+            file_type = file.split('.')[-1].lower()
+            if DEBUG: print(f"file = {file} file_type = {file_type} file_type type = {type(file_type)} conditional: {file_type in flattened_valid_file_types}")
+            if file_type in flattened_valid_file_types:
+                files_filtered.append(file)
+        return files_filtered
+    
+    def filter_all(self, files) -> None:
+        temp = self.filter_by_name(files)
+        if DEBUG: print(f"filter_all: filtered by name = {temp}")
+        self.files_list = self.filter_by_type(temp)
 
+    def dir_from_file(self, file: str) -> str:
+        return file.split(self.formatter)[1::-2]
+    
+    def move_file(self, file: str) -> None:
+        file_dir = ''
+        # file_dir = self.dir_from_file(file)
+        # self.create_new_directories(file_dir)
+        new_path = os.path.join(self.target_directory, file)
+        print(f"move_file: source_dir = {self.source_directory} type = {type(self.source_directory)}", *self.source_directory.parts)
+        file_path = PurePath(os.path.normpath(os.path.join(*self.source_directory.parts, file)))
+        if DEBUG: print(f"move_file: folder_name = {self.folder_name} file = {file} paths = {file_path} to {new_path}")
+        shutil.move(file_path, new_path)
+        if DEBUG: print(f"{self.folder_name}: moved {file} from {file_path} to {new_path}")
 
-class FileNameMove(FileTypeMove):
-    def __init__(self, file_name, folder_name, conditions, download_directory, target_directory):
-        super().__init__(folder_name, conditions, download_directory, target_directory)
-        self.file_name = file_name
-        self.rename_files = []
-
-
-    def rename(self):
-        if DEBUG: print("rename", self.folder_name)
-        files = os.listdir(self.target_directory)
-        self.create_file_list(files)
-        if DEBUG: print("list files in", self.target_directory, self.files_list)
+    def move_files(self) -> None:
+        file_list = os.listdir(self.source_directory)
+        if DEBUG: print(f'all files: {file_list}')
+        self.filter_all(file_list)
+        if DEBUG: print(f'filtered file list: {self.files_list}')
         for file in self.files_list:
-            if DEBUG: print(self.folder_name, file[len(self.conditions[0])::])
-            file_directory = self.target_directory + file
-            new_name_file_directory = self.target_directory + file.replace(self.conditions[0], '')
-            os.rename(file_directory, new_name_file_directory)
+            self.move_file(file)
 
+    def add_file_types(self, new_file_types: List[str]) -> None:
+        # if not isinstance(new_file_types, List):
+        #     pass
+        self.file_types.append(new_file_types)
 
-
+    def add_valid_name(self, new_file_names: List[str]) -> None:
+        self.valid_file_name.append(new_file_names)

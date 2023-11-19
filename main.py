@@ -1,66 +1,19 @@
 
 import time, os
-from FileMover.FileMovers import FileTypeMove, FileNameMove
-from FileMover.FileMoversV2 import FileTypeMove as FileTypeMoveV2, IMAGES
-from pathlib import Path
+from FileMover.FileMovers import FileMover as FileMover, IMAGES
+from pathlib import Path, PurePath
 
+DOWNLOAD_DIRECTORY = str(Path.home() / "Downloads") #C:\Users\user_name\Downlaods
+DOCUMENTS_DIRECTORY = str(Path.home() / "Documents") #C:\Users\user_name\Documents
 
 global DEBUG
 DEBUG = True
 
-"""
-def mooove(dled_files):
-    compeng270.move_files(dled_files)
-    compeng270.rename()
-
-    math220.move_files(dled_files)
-    math220.rename()
-
-    physics212.move_files(dled_files)
-    physics212.rename()
-
-    classwork.move_files(dled_files)
-    classwork.rename()
-
-    images.move_files(dled_files)
-    documents.move_files(dled_files)
-
-    execs.move_files(dled_files)
-
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
+    test_path = PurePath('/Users/Vinh/Documents/Test 1/Test2/He He He Ha/')
 
-    taken from https://stackoverflow.com/questions/35851281/python-finding-the-users-downloads-folder
-    not the best solution --> it will not work for people who do not use english and move their downloads folder around, but its not really a big concern unless i let other people use this
-
-    download_directory = str(Path.home() / "Downloads")
-
-    schooldocs_target_dir = str(Path.home() / "Documents") + '/Schoolwork/Semester 3'
-
-    if DEBUG: print(os.listdir())
-    files = [file for file in os.listdir(dl_dir)]
-
-    classwork = FileNameMove('__classwork__', 'classwork', ['__classwork__'], dl_dir, '')
-    images = FileTypeMove('images', ['.png', '.jpg', 'jpeg', 'webp'], dl_dir, '')
-    documents = FileTypeMove('documents', ['.docx', '.pdf', '.xls'], dl_dir, '')
-    execs = FileTypeMove('execs', ['.exe', '.app', '.msi'], dl_dir, dl_dir)
-
-    compeng270 = FileNameMove('_ce270_', 'Comp Eng 270', ['_ce270_'], dl_dir, sdocs_target_dir)
-    physics212 = FileNameMove('_p212_', 'Physics 212', ['_p212_'], dl_dir, sdocs_target_dir)
-    math220 = FileNameMove('_m220_', 'Math 220', ['_m220_'], dl_dir, sdocs_target_dir)
-
-    mooove(files)
-
-
-
-    while(True):
-        mooove()
-        if DEBUG: print("mooove")
-        time.sleep(60)
-    """
-if __name__ == '__main__':
-    print('lol')
-    # test = FileTypeMoveV2('test_folder', '', '/Users/vinhngo/Documents/Test 1/Test2/ He He He Ha',  'tester', IMAGES)
-    # test.create_new_directory()
+    test = FileMover('test_folder', PurePath(DOWNLOAD_DIRECTORY), test_path, [IMAGES], ['tester'])
+    print(test.target_directory, type(test.target_directory))
+    test.create_new_directories(test.target_directory)
+    test.move_files()
 
