@@ -28,7 +28,7 @@ class FileMover:
         self.file_types = self.add_file_types(file_types)
         self.formatter = formatter
         self.sub_dir = sub_dir
-        self.valid_file_name = self.add_file_types(valid_file_name)
+        self.valid_file_names = self.add_file_types(valid_file_name)
 
     def string_to_tuple(self, dir: str) -> Tuple[str]:
         if DEBUG: print(f"directory_to_list: {os.path.normpath(dir)}")
@@ -54,23 +54,17 @@ class FileMover:
         files_filtered = []
         for file in files:
             file_name_list = file.split(self.formatter)[0]
-            if DEBUG: print(f"file = {file_name_list} file_name = {self.valid_file_name}")
-            if file_name_list in self.valid_file_name:
+            if DEBUG: print(f"file = {file_name_list} file_name = {self.valid_file_names}")
+            if file_name_list in self.valid_file_names:
                 files_filtered.append(file)
         return files_filtered
     
     def filter_by_type(self, files: List[str]) -> List[str]:
-        flattened_valid_file_types = [] 
-        for sub_valid_type in self.file_types:
-            for valid_file_type in sub_valid_type:
-                flattened_valid_file_types.append(valid_file_type)
-        if DEBUG: print(f"valid_file_types = {flattened_valid_file_types}")
-
         files_filtered = []
         for file in files:
             file_type = file.split('.')[-1].lower()
             if DEBUG: print(f"file = {file} file_type = {file_type} file_type type = {type(file_type)} conditional: {file_type in flattened_valid_file_types}")
-            if file_type in flattened_valid_file_types:
+            if file_type in self.file_types:
                 files_filtered.append(file)
         return files_filtered
     
@@ -112,4 +106,4 @@ class FileMover:
                 self.file_types.append(element)
 
     def add_valid_name(self, new_file_names: List[str]) -> None:
-        self.valid_file_name.append(new_file_names)
+        self.valid_file_names.append(new_file_names)
