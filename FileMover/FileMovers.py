@@ -25,10 +25,10 @@ class FileMover:
         self.source_directory = source_directory
         self.target_directory = PurePath(os.path.normpath(os.path.join(target_directory, folder_name)))
         self.files_list = []
-        self.file_types = file_types
+        self.file_types = self.add_file_types(file_types)
         self.formatter = formatter
         self.sub_dir = sub_dir
-        self.valid_file_name = valid_file_name
+        self.valid_file_name = self.add_file_types(valid_file_name)
 
     def string_to_tuple(self, dir: str) -> Tuple[str]:
         if DEBUG: print(f"directory_to_list: {os.path.normpath(dir)}")
@@ -104,7 +104,12 @@ class FileMover:
     def add_file_types(self, new_file_types: List[str]) -> None:
         # if not isinstance(new_file_types, List):
         #     pass
-        self.file_types.append(new_file_types)
+        for element in new_file_types:
+            if isinstance(element, list):
+                for file_type in element:
+                    self.file_types.append(file_type)
+            else:
+                self.file_types.append(element)
 
     def add_valid_name(self, new_file_names: List[str]) -> None:
         self.valid_file_name.append(new_file_names)
